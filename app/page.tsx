@@ -32,6 +32,15 @@ export default function Page() {
   const [liked, setLiked] = useState<number[]>([])
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isDark, setIsDark] = useState(() => typeof window !== 'undefined' && (document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches))
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 24)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark)
@@ -52,7 +61,7 @@ export default function Page() {
 
   return (
 <main className="min-h-screen overflow-x-hidden bg-background pt-[76px] text-foreground">
-  <header className="fixed inset-x-0 top-0 z-40 mx-auto flex max-w-[1440px] items-center justify-between border-b border-border/60 bg-background/95 px-5 py-6 backdrop-blur-md md:px-10">
+      <header onMouseEnter={() => setIsHeaderHovered(true)} onMouseLeave={() => setIsHeaderHovered(false)} className={`fixed inset-x-0 top-0 z-40 mx-auto flex max-w-[1440px] items-center justify-between border-b border-border/60 px-5 py-6 transition-all duration-300 md:px-10 ${isScrolled && !isHeaderHovered ? 'bg-background/45 backdrop-blur-xl' : 'bg-background/95 backdrop-blur-md'}`}>
         <button className="text-left text-sm font-semibold tracking-[0.08em]" aria-label="Open menu">K&apos;Adams<span className="text-accent">.</span></button>
         <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground md:flex" aria-label="Main navigation">
           {['New arrivals', 'The edit', 'About us'].map((item) => <motion.a key={item} href="#shop" whileHover={{ y: -2 }} transition={{ type: 'spring', stiffness: 400, damping: 18 }} className="group relative text-muted-foreground transition-colors hover:text-foreground"><span>{item}</span><span className="absolute -bottom-2 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 group-hover:scale-x-100" /></motion.a>)}
