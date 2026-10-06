@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, ChevronDown, Heart, Moon, Search, ShoppingBag, Sparkles, Star, Sun, UserRound, X } from 'lucide-react'
 
@@ -35,6 +35,7 @@ export default function Page() {
   const [isThemeReady, setIsThemeReady] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isHeaderHovered, setIsHeaderHovered] = useState(false)
+  const [magneticPosition, setMagneticPosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 24)
@@ -66,6 +67,10 @@ export default function Page() {
   }), [activeCategory, debouncedQuery])
 
   const toggleLike = (id: number) => setLiked((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
+  const handleMagneticMove = (event: MouseEvent<HTMLElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    setMagneticPosition({ x: (event.clientX - bounds.left - bounds.width / 2) * 0.16, y: (event.clientY - bounds.top - bounds.height / 2) * 0.16 })
+  }
 
   return (
 <main className="min-h-screen overflow-x-hidden bg-background pt-[76px] text-foreground">
@@ -75,18 +80,18 @@ export default function Page() {
   {['New arrivals', 'The edit', 'About us'].map((item) => <motion.a key={item} href="#shop" whileHover={{ y: -2 }} transition={{ type: 'spring', stiffness: 400, damping: 18 }} className="group relative text-white transition-colors hover:text-white"><span>{item}</span><span className="absolute -bottom-2 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 group-hover:scale-x-100" /></motion.a>)}
         </nav>
         <div className="flex items-center gap-2">
-          <button onClick={() => setIsSearchOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Search"><Search size={17} strokeWidth={1.6} /></button>
-          <button onClick={() => setIsWishlistOpen(true)} className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Wishlist with ${liked.length} items`}><Heart size={17} strokeWidth={1.6} />{liked.length > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{liked.length}</span>}</button>
-          <button onClick={() => setIsProfileOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Open profile"><UserRound size={17} strokeWidth={1.6} /></button>
-          <button onClick={() => setIsDark((current) => !current)} className="theme-toggle rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={isThemeReady && isDark ? 'Switch to light theme' : 'Switch to dark theme'}>{isThemeReady && isDark ? <Moon size={17} strokeWidth={1.6} /> : <Sun size={17} strokeWidth={1.6} />}</button>
-          <button className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag size={17} strokeWidth={1.6} />{cartCount > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{cartCount}</span>}</button>
+          <motion.button whileHover={{ y: -2, scale: 1.05 }} whileTap={{ scale: 0.94 }} transition={{ type: 'spring', stiffness: 420, damping: 20 }} onClick={() => setIsSearchOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Search"><Search size={17} strokeWidth={1.6} /></motion.button>
+          <motion.button whileHover={{ y: -2, scale: 1.05 }} whileTap={{ scale: 0.94 }} transition={{ type: 'spring', stiffness: 420, damping: 20 }} onClick={() => setIsWishlistOpen(true)} className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Wishlist with ${liked.length} items`}><Heart size={17} strokeWidth={1.6} />{liked.length > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{liked.length}</span>}</motion.button>
+          <motion.button whileHover={{ y: -2, scale: 1.05 }} whileTap={{ scale: 0.94 }} transition={{ type: 'spring', stiffness: 420, damping: 20 }} onClick={() => setIsProfileOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Open profile"><UserRound size={17} strokeWidth={1.6} /></motion.button>
+          <motion.button whileHover={{ y: -2, rotate: 8 }} whileTap={{ scale: 0.9 }} transition={{ type: 'spring', stiffness: 420, damping: 20 }} onClick={() => setIsDark((current) => !current)} className="theme-toggle rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={isThemeReady && isDark ? 'Switch to light theme' : 'Switch to dark theme'}>{isThemeReady && isDark ? <Moon size={17} strokeWidth={1.6} /> : <Sun size={17} strokeWidth={1.6} />}</motion.button>
+          <motion.button whileHover={{ y: -2, scale: 1.05 }} whileTap={{ scale: 0.94 }} transition={{ type: 'spring', stiffness: 420, damping: 20 }} className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag size={17} strokeWidth={1.6} />{cartCount > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{cartCount}</span>}</motion.button>
         </div>
       </header>
 
       <section className="mx-auto grid max-w-[1440px] gap-6 px-5 pb-20 md:grid-cols-[1.08fr_0.92fr] md:px-10 md:pb-28">
         <div className="relative flex min-h-[520px] flex-col justify-between overflow-hidden rounded-[2px] bg-[#d8d0c2] p-7 md:min-h-[650px] md:p-12">
           <div className="relative z-10 flex items-start justify-between"><span className="rounded-full border border-foreground/20 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em]">Edition 01 / 2026</span><Sparkles size={18} strokeWidth={1.3} /></div>
-          <div className="relative z-10 max-w-xl"><p className="mb-4 text-xs uppercase tracking-[0.25em] text-foreground/60">Made for the in-between</p><h1 className="font-serif text-6xl leading-[0.93] tracking-[-0.045em] md:text-8xl">Quietly<br /><em>distinct.</em></h1><p className="mt-7 max-w-sm text-sm leading-relaxed text-foreground/65">A considered wardrobe of enduring pieces, designed to make ordinary days feel a little more intentional.</p><a href="#shop" className="mt-8 inline-flex items-center gap-3 border-b border-foreground pb-2 text-xs font-semibold uppercase tracking-[0.18em]">Explore the collection <ArrowRight size={15} /></a></div>
+          <div className="relative z-10 max-w-xl"><p className="mb-4 text-xs uppercase tracking-[0.25em] text-foreground/60">Made for the in-between</p><h1 className="font-serif text-6xl leading-[0.93] tracking-[-0.045em] md:text-8xl">Quietly<br /><em>distinct.</em></h1><p className="mt-7 max-w-sm text-sm leading-relaxed text-foreground/65">A considered wardrobe of enduring pieces, designed to make ordinary days feel a little more intentional.</p><motion.a href="#shop" onMouseMove={handleMagneticMove} onMouseLeave={() => setMagneticPosition({ x: 0, y: 0 })} animate={magneticPosition} transition={{ type: 'spring', stiffness: 280, damping: 18, mass: 0.2 }} whileTap={{ scale: 0.97 }} className="mt-8 inline-flex items-center gap-3 border-b border-foreground pb-2 text-xs font-semibold uppercase tracking-[0.18em]">Explore the collection <ArrowRight size={15} /></motion.a></div>
           <motion.div initial={{ rotate: -10, y: 45 }} animate={{ rotate: 5, y: 0 }} transition={{ duration: 1.1, ease: 'easeOut' }} className="absolute -bottom-10 right-[-4%] h-[60%] w-[56%] overflow-hidden rounded-t-full bg-[#b5a89a] shadow-2xl md:right-[5%] md:w-[45%]"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85" alt="Model wearing the K&apos;Adams collection" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage }} className="h-full w-full object-cover mix-blend-multiply opacity-85" /></motion.div>
         </div>
         <div className="relative overflow-hidden rounded-[2px] bg-[#333a35] p-7 text-[#f5f0e8] md:p-12"><div className="flex h-full flex-col justify-between"><div className="flex justify-between text-[10px] uppercase tracking-[0.22em] text-white/55"><span>Notes on living</span><span>01—04</span></div><div><div className="mb-5 h-px w-12 bg-[#c7a27d]" /><h2 className="max-w-md font-serif text-5xl leading-[0.98] tracking-[-0.04em] md:text-7xl">Objects with a <em>point of view.</em></h2><p className="mt-7 max-w-xs text-sm leading-relaxed text-white/60">Natural textures, unusual proportions, and the kind of quality you notice slowly.</p></div><div className="mt-12 flex items-end justify-between"><span className="text-7xl font-light text-white/10 md:text-9xl">01</span><button className="flex size-14 items-center justify-center rounded-full border border-white/30 transition-colors hover:bg-white hover:text-foreground" aria-label="Discover our story"><ArrowRight size={19} /></button></div></div></div>
