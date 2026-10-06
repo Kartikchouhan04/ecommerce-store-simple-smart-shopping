@@ -1,47 +1,79 @@
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowRight, ChevronDown, Heart, Search, ShoppingBag, Sparkles, X } from 'lucide-react'
+
+const products = [
+  { id: 1, name: 'The Sunday Coat', category: 'Outerwear', price: '$248', image: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?auto=format&fit=crop&w=900&q=85', tone: 'Warm wool / oat', collection: 'Fresh arrivals' },
+  { id: 2, name: 'Ribbed Column Dress', category: 'Dresses', price: '$164', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=900&q=85', tone: 'Organic cotton / black', collection: 'Fresh arrivals' },
+  { id: 3, name: 'The Everyday Loafer', category: 'Shoes', price: '$196', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=900&q=85', tone: 'Italian leather / merlot', collection: 'Bestsellers' },
+  { id: 4, name: 'Soft Form Bag', category: 'Accessories', price: '$212', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=85', tone: 'Vegetable leather / cognac', collection: 'Bestsellers' },
+  { id: 5, name: 'Fine Line Knit', category: 'Knitwear', price: '$118', oldPrice: '$148', image: 'https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?auto=format&fit=crop&w=900&q=85', tone: 'Merino blend / moss', collection: 'Sale' },
+  { id: 6, name: 'Studio Trouser', category: 'Trousers', price: '$132', oldPrice: '$176', image: 'https://images.unsplash.com/photo-1506629905607-d9a7e2c4e3b8?auto=format&fit=crop&w=900&q=85', tone: 'Linen twill / stone', collection: 'Sale' },
+  { id: 7, name: 'Sculpted Mini Hoop', category: 'Accessories', price: '$74', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=85', tone: 'Recycled brass / gold', collection: 'Fresh arrivals' },
+  { id: 8, name: 'Canvas Weekender', category: 'Accessories', price: '$186', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=85', tone: 'Washed canvas / olive', collection: 'Fresh arrivals' },
+]
+
+const categories = ['All pieces', 'Outerwear', 'Dresses', 'Shoes', 'Accessories']
+
 export default function Page() {
+  const [query, setQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState('All pieces')
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
+  const [liked, setLiked] = useState<number[]>([])
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query), 350)
+    return () => window.clearTimeout(timer)
+  }, [query])
+
+  const visibleProducts = useMemo(() => products.filter((product) => {
+    const matchesCategory = activeCategory === 'All pieces' || product.category === activeCategory
+    const matchesSearch = `${product.name} ${product.category}`.toLowerCase().includes(debouncedQuery.toLowerCase())
+    return matchesCategory && matchesSearch
+  }), [activeCategory, debouncedQuery])
+
+  const toggleLike = (id: number) => setLiked((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
+
   return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
+    <main className="min-h-screen overflow-hidden bg-background text-foreground">
+      <div className="border-b border-border bg-foreground px-5 py-2 text-center text-[10px] font-medium uppercase tracking-[0.22em] text-background">Complimentary shipping on orders over $150</div>
+      <header className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-6 md:px-10">
+        <button className="text-left text-sm font-semibold tracking-[0.08em]" aria-label="Open menu">Morrow<span className="text-accent">.</span></button>
+        <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground md:flex" aria-label="Main navigation">
+          {['New arrivals', 'The edit', 'About us'].map((item) => <a key={item} href="#shop" className="transition-colors hover:text-foreground">{item}</a>)}
+        </nav>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setIsSearchOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Search"><Search size={17} strokeWidth={1.6} /></button>
+          <button className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag size={17} strokeWidth={1.6} />{cartCount > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{cartCount}</span>}</button>
+        </div>
+      </header>
+
+      <section className="mx-auto grid max-w-[1440px] gap-6 px-5 pb-20 md:grid-cols-[1.08fr_0.92fr] md:px-10 md:pb-28">
+        <div className="relative flex min-h-[520px] flex-col justify-between overflow-hidden rounded-[2px] bg-[#d8d0c2] p-7 md:min-h-[650px] md:p-12">
+          <div className="relative z-10 flex items-start justify-between"><span className="rounded-full border border-foreground/20 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em]">Edition 01 / 2026</span><Sparkles size={18} strokeWidth={1.3} /></div>
+          <div className="relative z-10 max-w-xl"><p className="mb-4 text-xs uppercase tracking-[0.25em] text-foreground/60">Made for the in-between</p><h1 className="font-serif text-6xl leading-[0.93] tracking-[-0.045em] md:text-8xl">Quietly<br /><em>distinct.</em></h1><p className="mt-7 max-w-sm text-sm leading-relaxed text-foreground/65">A considered wardrobe of enduring pieces, designed to make ordinary days feel a little more intentional.</p><a href="#shop" className="mt-8 inline-flex items-center gap-3 border-b border-foreground pb-2 text-xs font-semibold uppercase tracking-[0.18em]">Explore the collection <ArrowRight size={15} /></a></div>
+          <motion.div initial={{ rotate: -10, y: 45 }} animate={{ rotate: 5, y: 0 }} transition={{ duration: 1.1, ease: 'easeOut' }} className="absolute -bottom-10 right-[-4%] h-[60%] w-[56%] overflow-hidden rounded-t-full bg-[#b5a89a] shadow-2xl md:right-[5%] md:w-[45%]"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=85" alt="Model wearing the Morrow collection" className="h-full w-full object-cover mix-blend-multiply opacity-85" /></motion.div>
+        </div>
+        <div className="relative overflow-hidden rounded-[2px] bg-[#333a35] p-7 text-[#f5f0e8] md:p-12"><div className="flex h-full flex-col justify-between"><div className="flex justify-between text-[10px] uppercase tracking-[0.22em] text-white/55"><span>Notes on living</span><span>01—04</span></div><div><div className="mb-5 h-px w-12 bg-[#c7a27d]" /><h2 className="max-w-md font-serif text-5xl leading-[0.98] tracking-[-0.04em] md:text-7xl">Objects with a <em>point of view.</em></h2><p className="mt-7 max-w-xs text-sm leading-relaxed text-white/60">Natural textures, unusual proportions, and the kind of quality you notice slowly.</p></div><div className="mt-12 flex items-end justify-between"><span className="text-7xl font-light text-white/10 md:text-9xl">01</span><button className="flex size-14 items-center justify-center rounded-full border border-white/30 transition-colors hover:bg-white hover:text-foreground" aria-label="Discover our story"><ArrowRight size={19} /></button></div></div></div>
+      </section>
+
+      <section id="shop" className="mx-auto max-w-[1440px] px-5 pb-28 md:px-10"><div className="mb-10 flex flex-col justify-between gap-6 border-t border-border pt-8 md:flex-row md:items-end"><div><p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">The collection</p><h2 className="font-serif text-5xl tracking-[-0.04em]">Good things, <em>well made.</em></h2></div><div className="flex flex-wrap gap-5 text-xs uppercase tracking-[0.16em]">{categories.map((category) => <button key={category} onClick={() => setActiveCategory(category)} className={`border-b pb-1 transition-colors ${activeCategory === category ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{category}</button>)}</div></div>
+        <AnimatePresence mode="popLayout"><div className="grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">{visibleProducts.map((product, index) => <motion.article layout key={product.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ delay: index * 0.07 }} className="group"><div className="relative aspect-[0.82] overflow-hidden bg-muted"><img src={product.image} alt={product.name} className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" /><button onClick={() => toggleLike(product.id)} className="absolute right-3 top-3 rounded-full bg-background/80 p-2.5 backdrop-blur-sm" aria-label={`${liked.includes(product.id) ? 'Remove' : 'Add'} ${product.name} ${liked.includes(product.id) ? 'from' : 'to'} wishlist`}><Heart size={16} fill={liked.includes(product.id) ? 'currentColor' : 'none'} strokeWidth={1.5} /></button><button onClick={() => setCartCount((count) => count + 1)} className="absolute bottom-0 left-0 right-0 translate-y-full bg-foreground py-4 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-background transition-transform duration-300 group-hover:translate-y-0">Add to bag</button></div><div className="mt-4 flex justify-between gap-3"><div><h3 className="text-sm font-medium">{product.name}</h3><p className="mt-1 text-xs text-muted-foreground">{product.tone}</p></div><span className="flex items-center gap-2 text-sm">{product.oldPrice && <del className="text-muted-foreground">{product.oldPrice}</del>}<span className={product.oldPrice ? 'text-accent' : ''}>{product.price}</span></span></div></motion.article>)}</div></AnimatePresence>{visibleProducts.length === 0 && <p className="py-20 text-center font-serif text-3xl">No pieces found.</p>}
+      </section>
+
+      <section className="border-y border-border bg-[#ded7ca] px-5 py-20 md:px-10 md:py-28"><div className="mx-auto max-w-[1440px]"><div className="mb-12 flex items-end justify-between"><div><p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Curated for now</p><h2 className="font-serif text-5xl tracking-[-0.04em]">A little more <em>to discover.</em></h2></div><ArrowRight className="hidden md:block" size={22} strokeWidth={1.2} /></div><div className="grid gap-4 md:grid-cols-3"><a href="#shop" className="group relative flex min-h-64 flex-col justify-between overflow-hidden bg-[#a9ad9b] p-6 transition-transform hover:-translate-y-1"><span className="text-[10px] uppercase tracking-[0.2em]">Fresh arrivals</span><span className="font-serif text-4xl leading-none">Just<br /><em>in.</em><ArrowRight className="mt-5 transition-transform group-hover:translate-x-2" size={22} strokeWidth={1.2} /></span></a><a href="#shop" className="group relative flex min-h-64 flex-col justify-between overflow-hidden bg-[#a89078] p-6 text-background transition-transform hover:-translate-y-1"><span className="text-[10px] uppercase tracking-[0.2em] text-background/70">The considered sale</span><span className="font-serif text-4xl leading-none">Up to<br /><em>30% off.</em><ArrowRight className="mt-5 transition-transform group-hover:translate-x-2" size={22} strokeWidth={1.2} /></span></a><a href="#shop" className="group relative flex min-h-64 flex-col justify-between overflow-hidden bg-[#333a35] p-6 text-background transition-transform hover:-translate-y-1"><span className="text-[10px] uppercase tracking-[0.2em] text-background/55">Our signatures</span><span className="font-serif text-4xl leading-none">Made to<br /><em>last.</em><ArrowRight className="mt-5 transition-transform group-hover:translate-x-2" size={22} strokeWidth={1.2} /></span></a></div></div></section>
+
+      <footer className="bg-foreground px-5 py-14 text-background md:px-10 md:py-20"><div className="mx-auto grid max-w-[1440px] gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]"><div><p className="text-xl font-semibold tracking-[0.08em]">Morrow<span className="text-[#c7a27d]">.</span></p><p className="mt-5 max-w-xs text-sm leading-relaxed text-background/55">Thoughtful objects for a life well lived. Designed in London, made everywhere with care.</p></div><div><p className="mb-5 text-[10px] uppercase tracking-[0.2em] text-background/45">Visit</p><p className="text-sm leading-7 text-background/70">18 Redchurch Street<br />London E2 7DP<br />Mon—Sat, 10—18</p></div><div><p className="mb-5 text-[10px] uppercase tracking-[0.2em] text-background/45">Follow</p><div className="flex flex-col gap-2 text-sm text-background/70"><a href="#instagram" className="hover:text-background">Instagram</a><a href="#journal" className="hover:text-background">Journal</a><a href="#contact" className="hover:text-background">Contact</a></div></div><div><p className="mb-5 text-[10px] uppercase tracking-[0.2em] text-background/45">The letter</p><p className="mb-4 text-sm text-background/70">Occasional notes from Morrow.</p><div className="flex border-b border-background/35 pb-2"><input aria-label="Email address" placeholder="Your email address" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-background/35" /><button aria-label="Subscribe"><ArrowRight size={16} /></button></div></div></div><div className="mx-auto mt-16 flex max-w-[1440px] justify-between border-t border-background/15 pt-5 text-[10px] uppercase tracking-[0.16em] text-background/35"><span>© 2026 Morrow Studio</span><span>Privacy / Terms</span></div></footer>
+
+      <AnimatePresence>{isSearchOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-start justify-center bg-foreground/35 p-5 pt-28 backdrop-blur-sm"><motion.div initial={{ y: -20 }} animate={{ y: 0 }} className="w-full max-w-2xl bg-background p-6 shadow-2xl"><div className="flex items-center gap-4 border-b border-border pb-4"><Search size={20} strokeWidth={1.5} /><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the collection" className="flex-1 bg-transparent font-serif text-2xl outline-none placeholder:text-muted-foreground/50" /><button onClick={() => setIsSearchOpen(false)} aria-label="Close search"><X size={20} /></button></div><p className="mt-5 text-xs text-muted-foreground">{query ? `${visibleProducts.length} pieces matching “${query}”` : 'Try “coat”, “dress”, or “leather”.'}</p></motion.div></motion.div>}</AnimatePresence>
     </main>
   )
 }
+
+// Search input is intentionally debounced above so filtering stays quiet while a shopper types.
+// In a data-backed version, the same debounced value should drive the request key.
+
