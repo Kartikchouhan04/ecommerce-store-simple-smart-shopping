@@ -31,7 +31,8 @@ export default function Page() {
   const [cartCount, setCartCount] = useState(0)
   const [liked, setLiked] = useState<number[]>([])
   const [debouncedQuery, setDebouncedQuery] = useState('')
-  const [isDark, setIsDark] = useState(() => typeof window !== 'undefined' && (document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches))
+  const [isDark, setIsDark] = useState(false)
+  const [isThemeReady, setIsThemeReady] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isHeaderHovered, setIsHeaderHovered] = useState(false)
 
@@ -39,12 +40,19 @@ export default function Page() {
     const handleScroll = () => setIsScrolled(window.scrollY > 24)
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll, { passive: true })
   }, [])
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark)
-  }, [isDark])
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const hasDarkClass = document.documentElement.classList.contains('dark')
+    setIsDark(hasDarkClass || prefersDark)
+    setIsThemeReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (isThemeReady) document.documentElement.classList.toggle('dark', isDark)
+  }, [isDark, isThemeReady])
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query), 350)
@@ -70,7 +78,7 @@ export default function Page() {
           <button onClick={() => setIsSearchOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Search"><Search size={17} strokeWidth={1.6} /></button>
           <button onClick={() => setIsWishlistOpen(true)} className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Wishlist with ${liked.length} items`}><Heart size={17} strokeWidth={1.6} />{liked.length > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{liked.length}</span>}</button>
           <button onClick={() => setIsProfileOpen(true)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label="Open profile"><UserRound size={17} strokeWidth={1.6} /></button>
-          <button onClick={() => setIsDark((current) => !current)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}>{isDark ? <Moon size={17} strokeWidth={1.6} /> : <Sun size={17} strokeWidth={1.6} />}</button>
+          <button onClick={() => setIsDark((current) => !current)} className="rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={isThemeReady && isDark ? 'Switch to light theme' : 'Switch to dark theme'}>{isThemeReady && isDark ? <Moon size={17} strokeWidth={1.6} /> : <Sun size={17} strokeWidth={1.6} />}</button>
           <button className="relative rounded-full p-2.5 transition-colors hover:bg-muted" aria-label={`Shopping bag with ${cartCount} items`}><ShoppingBag size={17} strokeWidth={1.6} />{cartCount > 0 && <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] text-accent-foreground">{cartCount}</span>}</button>
         </div>
       </header>
