@@ -46,9 +46,9 @@ export default function Page() {
   const toggleLike = (id: number) => setLiked((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
 
   return (
-    <main className="min-h-screen overflow-hidden bg-background text-foreground">
-      <div className="border-b border-border bg-foreground px-5 py-2 text-center text-[10px] font-medium uppercase tracking-[0.22em] text-background">Complimentary shipping on orders over $150</div>
-      <header className="sticky top-0 z-40 mx-auto flex max-w-[1440px] items-center justify-between border-b border-border/60 bg-background/95 px-5 py-6 backdrop-blur-md md:px-10">
+<main className="min-h-screen overflow-x-hidden bg-background pt-[76px] text-foreground">
+  <div className="border-b border-border bg-foreground px-5 py-2 text-center text-[10px] font-medium uppercase tracking-[0.22em] text-background">Complimentary shipping on orders over $150</div>
+  <header className="fixed inset-x-0 top-0 z-40 mx-auto flex max-w-[1440px] items-center justify-between border-b border-border/60 bg-background/95 px-5 py-6 backdrop-blur-md md:px-10">
         <button className="text-left text-sm font-semibold tracking-[0.08em]" aria-label="Open menu">K&apos;Adams<span className="text-accent">.</span></button>
         <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground md:flex" aria-label="Main navigation">
           {['New arrivals', 'The edit', 'About us'].map((item) => <motion.a key={item} href="#shop" whileHover={{ y: -2 }} transition={{ type: 'spring', stiffness: 400, damping: 18 }} className="group relative text-muted-foreground transition-colors hover:text-foreground"><span>{item}</span><span className="absolute -bottom-2 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-300 group-hover:scale-x-100" /></motion.a>)}
