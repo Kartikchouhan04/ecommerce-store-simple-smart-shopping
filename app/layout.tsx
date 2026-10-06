@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Morrow — Quietly distinct.',
+  title: "K'Adams — Quietly distinct.",
   description: 'A considered wardrobe of enduring pieces, designed to make ordinary days feel a little more intentional.',
   generator: 'v0.app',
   icons: {
