@@ -54,6 +54,25 @@
   --font-serif: Georgia, 'Times New Roman', serif;
 }
 
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.18 0.014 73);
+  --foreground: oklch(0.94 0.012 82);
+  --card: oklch(0.22 0.014 73);
+  --card-foreground: oklch(0.94 0.012 82);
+  --popover: oklch(0.22 0.014 73);
+  --popover-foreground: oklch(0.94 0.012 82);
+  --primary: oklch(0.94 0.012 82);
+  --primary-foreground: oklch(0.18 0.014 73);
+  --secondary: oklch(0.27 0.018 73);
+  --secondary-foreground: oklch(0.92 0.012 82);
+  --muted: oklch(0.27 0.018 73);
+  --muted-foreground: oklch(0.7 0.018 73);
+  --border: oklch(0.94 0.012 82 / 18%);
+  --input: oklch(0.94 0.012 82 / 24%);
+  --ring: oklch(0.72 0.095 55);
+}
+
 @layer base {
   * { @apply border-border outline-ring/50; }
   html { scroll-behavior: smooth; }
